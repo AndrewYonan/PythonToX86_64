@@ -1,0 +1,27 @@
+TOKEN_INT = "INT"
+TOKEN_PLUS = "PLUS"
+TOKEN_MINUS = "MINUS"
+TOKEN_VAR = "VAR"
+TOKEN_ASSIGN = "ASSIGN"
+TOKEN_LPAREN = "LPAREN"
+TOKEN_RPAREN = "RPAREN"
+TOKEN_PRINT = "PRINT"
+TOKEN_INPUT = "INPUT"
+TOKEN_NEWLINE = "NEWLINE"
+TOKEN_COMMENT = "#"
+TOKEN_EOF = "EOF"
+
+
+
+token_spec = [(r'print', TOKEN_PRINT),
+              (r'input\(\)', TOKEN_INPUT),
+              (r'[a-zA-Z_][a-zA-Z0-9_]*', TOKEN_VAR),
+              (r'\d+', TOKEN_INT),
+              (r'\+', TOKEN_PLUS),
+              (r'\-', TOKEN_MINUS),
+              (r'\=', TOKEN_ASSIGN),
+              (r'\(', TOKEN_LPAREN),
+              (r'\)', TOKEN_RPAREN),
+              (r'\n', TOKEN_NEWLINE),
+              (r'#.*(\n|\Z)', TOKEN_COMMENT),
+              (r'\s+', None)]
