@@ -1,8 +1,9 @@
 import os
 import sys
 
-from parser import *
 from compile import *
+from parser import *
+from AST import *
 
 
 if __name__ == "__main__":
@@ -20,4 +21,8 @@ if __name__ == "__main__":
         print(compile_x86_64(prog))
     elif (flag == "lex"):
         print(lex(prog))
+    elif (flag == "parse"):
+        astree = parse(prog)
+        print(astree)
+        
     

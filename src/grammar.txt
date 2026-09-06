@@ -1,0 +1,4 @@
+expr |= print(expr)
+     |= (expr)
+     |= expr + expr
+     |= INT
