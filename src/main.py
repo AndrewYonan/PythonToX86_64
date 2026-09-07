@@ -1,10 +1,11 @@
 import os
 import sys
 
-from compile import *
+from Compile import *
+from flatten import *
 from parser import *
 from unparser import *
-from AST import *
+from ASTree import *
 
 
 if __name__ == "__main__":
@@ -20,13 +21,21 @@ if __name__ == "__main__":
 
     if (flag == "run"):
         print(compile_x86_64(prog))
+
     elif (flag == "lex"):
         print(lex(prog))
+
     elif (flag == "parse"):
         astree = parse(prog)
         print(astree)
+
     elif (flag == "unparse"):
         astree = parse(prog)
         print(un_parse(astree))
+
+    elif (flag == "flatten"):
+        astree = parse(prog)
+        flat_tree = flatten(astree)
+        print(un_parse(flat_tree))
         
     

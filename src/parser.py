@@ -1,5 +1,5 @@
 import re
-from AST import *
+from ASTree import *
 
 
 TOKEN_PRINT = "PRINT"
@@ -150,10 +150,11 @@ class Parser:
         binop = self.current_token[0]
 
         while binop in self.valid_binops:
+            
             self.consume(binop)
             node = BinOp(left = node, op = self.binop_obj(binop), right = self.term())
             binop = self.current_token[0]
-            
+
         return node
 
 
