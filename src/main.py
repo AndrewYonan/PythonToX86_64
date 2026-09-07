@@ -3,6 +3,7 @@ import sys
 
 from compile import *
 from parser import *
+from unparser import *
 from AST import *
 
 
@@ -24,5 +25,8 @@ if __name__ == "__main__":
     elif (flag == "parse"):
         astree = parse(prog)
         print(astree)
+    elif (flag == "unparse"):
+        astree = parse(prog)
+        print(un_parse(astree))
         
     

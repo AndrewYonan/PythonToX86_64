@@ -7,15 +7,21 @@ TOKEN_LPAREN = "LPAREN"
 TOKEN_RPAREN = "RPAREN"
 TOKEN_INT = "INT"
 TOKEN_PLUS = "PLUS"
+TOKEN_MINUS = "MINUS"
+TOKEN_VAR = "VAR"
+TOKEN_ASSIGN = "ASSIGN"
 TOKEN_NEWLINE = "NEWLINE"
 TOKEN_EOF = "EOF"
 
 
 token_spec = [(r'print', TOKEN_PRINT),
+              (r'[a-zA-Z][a-zA-Z0-9]*', TOKEN_VAR),
+              (r'=', TOKEN_ASSIGN),
               (r'\(', TOKEN_LPAREN),
               (r'\)', TOKEN_RPAREN),
               (r'\d+', TOKEN_INT),
               (r'\+', TOKEN_PLUS),
+              (r'\-', TOKEN_MINUS),
               (r'\n', TOKEN_NEWLINE),
               (r'\s+', None)]
 
@@ -86,18 +92,25 @@ class Parser:
     def __init__(self, lexer):
         self.lexer = lexer
         self.current_token = self.lexer.get_next_token()
+        self.valid_binops = [TOKEN_PLUS, TOKEN_MINUS]
         self.module_body = []
 
     def consume(self, token_type):
         if self.current_token[0] == token_type:
             self.current_token = self.lexer.get_next_token()
         else:
-            print(f"ERR : unexpected token {self.current_token}")
+            print(f"ERR : unexpected token {self.current_token} on consume({token_type})")
             exit(1)
 
     def strip_newlines(self):
         while self.current_token[0] == TOKEN_NEWLINE:
             self.consume(TOKEN_NEWLINE)
+
+    def binop_obj(self, binop):
+        if binop == TOKEN_PLUS:
+            return Add()
+        elif binop == TOKEN_MINUS:
+            return Sub()
 
     def at_prog_end(self):
         return self.current_token[0] == TOKEN_EOF
@@ -109,7 +122,15 @@ class Parser:
         if token[0] == TOKEN_INT:
             self.consume(TOKEN_INT)
             return Constant(value=int(token[1]))
+
+        if token[0] == TOKEN_MINUS:
+            self.consume(TOKEN_MINUS)
+            return UnaryOp(op=USub(), operand=self.factor())
         
+        if token[0] == TOKEN_VAR:
+            self.consume(TOKEN_VAR)
+            return Name(id=token[1], ctx=Load())
+
         if token[0] == TOKEN_LPAREN:
             self.consume(TOKEN_LPAREN)
             node = self.expr()
@@ -124,10 +145,15 @@ class Parser:
         return self.simple_statement()
 
     def expr(self):
+
         node = self.term()
-        while self.current_token[0] == TOKEN_PLUS:
-            self.consume(TOKEN_PLUS)
-            node = BinOp(left = node, op = Add(), right = self.term())
+        binop = self.current_token[0]
+
+        while binop in self.valid_binops:
+            self.consume(binop)
+            node = BinOp(left = node, op = self.binop_obj(binop), right = self.term())
+            binop = self.current_token[0]
+            
         return node
 
 
@@ -139,8 +165,17 @@ class Parser:
             node = Call(func=Name(id="print", ctx=Load()), args=[self.expr()])
             self.consume(TOKEN_RPAREN)
             return Expr(value=node)
-
-        return None
+        
+        elif self.current_token[0] == TOKEN_VAR:
+            next_token = self.lexer.look_ahead()
+            if next_token:
+                if next_token[0] == TOKEN_ASSIGN:
+                    var_id = self.current_token[1]
+                    self.consume(TOKEN_VAR)
+                    self.consume(TOKEN_ASSIGN)
+                    return Assign(targets=[Name(id=var_id, ctx=Store())], value=self.expr())
+        
+        return self.expr()
 
     def parse(self):
         

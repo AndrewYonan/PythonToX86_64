@@ -1,3 +1,5 @@
+
+
 class ASTree:
     def __init__(self, module):
         self.module = module
@@ -66,6 +68,10 @@ class Add:
     def __repr__(self):
         return "Add()"
 
+class Sub:
+    def __repr__(self):
+        return "Sub()"
+
 class Load:
     def __repr__(self):
         return "Load()"
@@ -132,12 +138,13 @@ class ASTDump:
             return f"Constant(value={node.value})"
         
         if isinstance(node, BinOp):
+            s1 = self.indent * depth
             left = self.dump(node.left, depth+1)
             right = self.dump(node.right, depth+1)
-            return f"BinOp(\n{self.indent*(depth+1)}left={left},\n{self.indent*(depth+1)}op={node.op},\n{self.indent*(depth+1)}right={right})"
+            return f"BinOp(\n{self.indent*(depth+1)}left={left},\n{self.indent*(depth+1)}op={node.op},\n{self.indent*(depth+1)}right={right}\n{s1})"
         
         if isinstance(node, UnaryOp):
-            s1 = self.indent * depth
+            
             s2 = self.indent * (depth + 1)
             operand = self.dump(node.operand, depth+1)
             return f"UnaryOp(\n{s2}op={node.op},\n{s2}operand={operand})"
@@ -153,7 +160,7 @@ class ASTDump:
             s2 = self.indent * (depth + 1)
             targets = self.dump(node.targets, depth + 1)
             value = self.dump(node.value, depth + 1)
-            return f"Assign(\n{s2}targets={targets}\n{s2}value={value})" 
+            return f"Assign(\n{s2}targets={targets}\n{s2}value={value}\n{s1})" 
         
         if isinstance(node, Name):
             s1 = self.indent * depth
